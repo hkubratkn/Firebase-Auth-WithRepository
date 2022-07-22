@@ -1,0 +1,5 @@
+class MyViewModelFactory(
+    private val chatId: String
+): ViewModelProvider.NewInstanceFactory(){
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T = UserProfileViewModel(chatId) as T
+}
