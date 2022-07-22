@@ -1,5 +1,8 @@
-class MyViewModelFactory(
-    private val chatId: String
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+
+class RegisterViewModelFactory(
+    private val registerRepository: RegisterRepository
 ): ViewModelProvider.NewInstanceFactory(){
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T = UserProfileViewModel(chatId) as T
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = RegisterViewModel(registerRepository) as T
 }
