@@ -12,6 +12,8 @@ fun RegisterPage(
         factory = RegisterViewModelFactory(RegisterRepository())
     )
 ){
+
+    val dataOrException = registerViewModel.data.value
     val signedIn: Boolean by registerViewModel.signedIn.observeAsState(false)
     val loading = registerViewModel.loading.observeAsState()
     val email = remember { mutableStateOf("")}
@@ -43,19 +45,26 @@ fun RegisterPage(
             Text(text = "do")
         }
 
+
+        val email = "hello@one.com"
+        val password = "1234567890"
+
         Button(
             onClick = {
-                registerViewModel.signIn(email.value, password.value)
-                Toast.makeText(ctx, "dddd", Toast.LENGTH_LONG).show()
+                registerViewModel.login(email , password )
             }
-        ){
-            Text("enter")
+        ) {
+            Text(text = "change")
         }
 
-        if(loading.value!!){
+        val e = dataOrException.e
+        e?.let {
+            Text(text = e.message!!)
+        }
+
+        if (registerViewModel.loading.value) {
             CircularProgressIndicator()
         }
 
     }
-
 }
