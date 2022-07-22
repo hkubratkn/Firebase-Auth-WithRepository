@@ -1,3 +1,4 @@
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers.IO
@@ -9,9 +10,23 @@ class RegisterRepository {
         Firebase.auth.createUserWithEmailAndPassword(email, password).await()
     }
 
-    suspend fun login(email: String, password: String): Unit = withContext(IO) {
-        Firebase.auth.signInWithEmailAndPassword(email, password).await()
+    fun signOut() = Firebase.auth.signOut()
+    
+    suspend fun login(email: String, password: String):DataOrExceptionMessageList<Any, Exception> {
+        val dataOrExceptionMessageList = DataOrExceptionMessageList<Any, Exception>()
+        try {
+            dataOrExceptionMessageList.data =
+                Firebase.auth.signInWithEmailAndPassword(email, password)
+                    .await()
+        } catch (e: FirebaseAuthException) {
+            dataOrExceptionMessageList.e = e
+        }
+        return dataOrExceptionMessageList
     }
 
-    fun signOut() = Firebase.auth.signOut()
 }
+
+data class DataOrExceptionMessageList<T, E : Exception?>(
+    var data: T? = null,
+    var e: E? = null
+)
