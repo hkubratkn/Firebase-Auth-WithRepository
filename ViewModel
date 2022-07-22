@@ -6,6 +6,10 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 
 class RegisterViewModel(
     private val registerRepository: RegisterRepository
@@ -36,22 +40,25 @@ class RegisterViewModel(
         }
     }
 
-    fun signIn(email: String, password: String) = viewModelScope.launch {
-        try {
-            _loading.postValue(true)
-            registerRepository.login(email, password)
-            _signedIn.postValue(true)
-            Log.d("login page", "done")
-        } catch (e: Exception) {
-            _error.postValue(e.localizedMessage)
-        } finally {
-            _loading.postValue(false)
-        }
-    }
-
     fun signOut() {
         registerRepository.signOut()
         _signedIn.postValue(false)
+    }
+
+    val loading = mutableStateOf(false)
+    val data: MutableState<DataOrExceptionMessageList<Any, Exception>> = mutableStateOf(
+        DataOrExceptionMessageList(
+            Any(),
+            Exception("")
+        )
+    )
+
+    fun login(email: String, password: String) {
+        viewModelScope.launch {
+            loading.value = true
+            data.value = registerRepository.login(email, password)
+            loading.value = false
+        }
     }
 
 }
