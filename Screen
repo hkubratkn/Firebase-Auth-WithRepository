@@ -1,0 +1,61 @@
+import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+@Composable
+fun RegisterPage(
+    registerViewModel: RegisterViewModel = viewModel(
+        factory = RegisterViewModelFactory(RegisterRepository())
+    )
+){
+    val signedIn: Boolean by registerViewModel.signedIn.observeAsState(false)
+    val loading = registerViewModel.loading.observeAsState()
+    val email = remember { mutableStateOf("")}
+    val password = remember { mutableStateOf("") }
+    val ctx = LocalContext.current
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        OutlinedTextField(
+            value = email.value,
+            onValueChange = {email.value = it}
+        )
+
+        OutlinedTextField(
+            value = password.value,
+            onValueChange = {password.value = it}
+        )
+
+        Button(
+            onClick = {
+                registerViewModel.signUp(email.value, password.value)
+                if(signedIn){ Toast.makeText(ctx, "done", Toast.LENGTH_LONG).show() }
+            }
+        ) {
+            Text(text = "do")
+        }
+
+        Button(
+            onClick = {
+                registerViewModel.signIn(email.value, password.value)
+                Toast.makeText(ctx, "dddd", Toast.LENGTH_LONG).show()
+            }
+        ){
+            Text("enter")
+        }
+
+        if(loading.value!!){
+            CircularProgressIndicator()
+        }
+
+    }
+
+}
